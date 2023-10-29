@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 
 const connectDatabase = require('./src/config/database')
+const route = require('./src/routes')
 
 const app = express()
 
@@ -18,9 +19,6 @@ app.use(cors())
 // connect to MongoDB allats
 connectDatabase(app)
 
-app.get('/', (req,res) => {
-    res.json({
-        "Message" : "Welcome to my server application"
-    })
-})
+// routes navigate
+route(app)
 
