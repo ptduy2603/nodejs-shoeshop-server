@@ -14,6 +14,8 @@ app.use(bodyParser.json())
 
 // use morgan for reading request log from clients
 app.use(morgan('combined'))
+
+// configure cors
 app.use(cors())
 
 // connect to MongoDB allats

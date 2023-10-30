@@ -16,7 +16,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
         from:'shoeshop.com',
         to:email,
         subject: 'Email verification',
-        text:`Please click the following link to verify your email : https://localhost:8000/users/verify/${verificationToken}`
+        text:`Please click the following link to verify your email : http://localhost:8000/users/verify/${verificationToken}`
     }
 
     // send email
@@ -47,8 +47,8 @@ class authController {
         try {
             const { username, email, password } = req.body
             // check if email is exist in database
-            const existEmail = await UsersModel.find({ email: email })
-            if(existEmail) {
+            const existEmail = await UsersModel.find({ email })
+            if(existEmail.length) {
                 return res.status(400).json({ "Message": "Email is existing" })
             }
             else {
@@ -66,6 +66,7 @@ class authController {
 
                 // send verification email to user
                 sendVerificationEmail(newUser.email, newUser.verificationToken)
+                res.status(200).json({ "Message" : 'Create new user successfully' })
             }            
         }
         catch(err) {
@@ -94,6 +95,7 @@ class authController {
             res.status(500).json({ "Message" : "Email verificaiton failed" })
         }
     }
+
 }
 
 module.exports = new authController
