@@ -1,6 +1,12 @@
 const crypto = require('crypto')
 const nodeMailer = require('nodemailer')
 const UsersModel = require('../models/user')
+const jwt = require('jsonwebtoken')
+
+// fucntion to create a secretKey for JWT encode
+const createSecretKey = () => {
+    return crypto.randomBytes(32).toString('hex')
+}
 
 // fucntion to send verification email to user
 const sendVerificationEmail = async (email, verificationToken) => {
@@ -79,8 +85,7 @@ class authController {
     //[GET] /users/verify/:token
     async verifyUser(req, res, next) {
         try {
-            const token = req.params.token
-            console.log("Token is", token)
+            const token = req.params.token          
             const user = await UsersModel.findOne({ verificationToken : token })
             if(!user) {
                 return res.status(404).json({ "Message" : "Invalid verification token" })
@@ -100,6 +105,34 @@ class authController {
         }
     }
 
+    //[POST] users/login
+    async login(req, res, next) {
+        try {
+            const { email, password } = req.body
+            // check if user is not exsist
+            const user = await UsersModel.findOne({ email })
+            if(!user) {
+                return res.status(401).json({ "message" : "Your is mail is not exist" })
+            }
+            
+            // check if password is incorrect
+            if(user.password !== password) {
+                return res.status(400).json({ "message" : "Your password is incorrect" })
+            }
+
+            // create JWT return to client and allow user to login
+            const token = jwt.sign({
+                userId : user._id,
+            }, createSecretKey(), { algorithm: 'HS256' })
+
+            res.status(200).json({token, "message": 'Login successfully'})
+        }
+        catch(error) {
+            res.status(500).json({ "message" : 'Login failed' })
+            console.log("Login error:", error)
+            next(error)
+        }
+    }
 }
 
 module.exports = new authController
