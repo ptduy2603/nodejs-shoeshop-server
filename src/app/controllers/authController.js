@@ -9,11 +9,12 @@ const sendVerificationEmail = async (email, verificationToken) => {
         service: 'gmail',
         auth: {
             user: 'duythanhpham2603@gmail.com',
+            pass: 'yaleomwvobnsdvgv'
         }
     })
 
     const options = {
-        from:'shoeshop.com',
+        from:'duythanhpham2603@gmail.com',
         to:email,
         subject: 'Email verification',
         text:`Please click the following link to verify your email : http://localhost:8000/users/verify/${verificationToken}`
@@ -75,24 +76,27 @@ class authController {
         }
     }
 
-    //[GET] /users/verify/:verificationToken
+    //[GET] /users/verify/:token
     async verifyUser(req, res, next) {
         try {
-            const token = req.pagrams.verificationToken
+            const token = req.params.token
+            console.log("Token is", token)
             const user = await UsersModel.findOne({ verificationToken : token })
             if(!user) {
-                res.status(404).json({ "Message" : "Invalid verification token" })
+                return res.status(404).json({ "Message" : "Invalid verification token" })
             }
             else 
             {
                 user.verified = true
                 user.verificationToken = undefined
                 await user.save()
-                res.status(200).json({ "Message" : 'Verify email successfully' })
+                res.status(200).json({ "Message" : 'Verify email successfully!' })
             }
         }   
         catch(error) {
             res.status(500).json({ "Message" : "Email verificaiton failed" })
+            console.log("Verify email error", error)
+            next(error)
         }
     }
 
