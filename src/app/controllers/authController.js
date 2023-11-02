@@ -1,39 +1,11 @@
 const crypto = require('crypto')
-const nodeMailer = require('nodemailer')
 const UsersModel = require('../models/user')
 const jwt = require('jsonwebtoken')
 
-// fucntion to create a secretKey for JWT encode
-const createSecretKey = () => {
-    return crypto.randomBytes(32).toString('hex')
-}
+const sendEmail = require('../../untils/sendEmail')
 
-// fucntion to send verification email to user
-const sendVerificationEmail = async (email, verificationToken) => {
-    // create a transport mailer
-    const transporter = nodeMailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'duythanhpham2603@gmail.com',
-            pass: 'yaleomwvobnsdvgv'
-        }
-    })
-
-    const options = {
-        from:'duythanhpham2603@gmail.com',
-        to:email,
-        subject: 'Email verification',
-        text:`Please click the following link to verify your email : http://localhost:8000/users/verify/${verificationToken}`
-    }
-
-    // send email
-    try {
-        await transporter.sendMail(options)
-    } 
-    catch(error) {
-        console.log("Failed to send verification email", error)
-    }
-}
+// function to create a secretKey for JWT encode
+const SECRET_KEY = 'myserverforshoeshop'
 
 class authController {
     //[GET] /users
@@ -72,7 +44,8 @@ class authController {
                 await newUser.save()
 
                 // send verification email to user
-                sendVerificationEmail(newUser.email, newUser.verificationToken)
+                sendEmail(newUser.email, '[ShoeShop] Verification Email', `Please click the following link to verify your email : http://localhost:8000/users/verify/${newUser.verificationToken}`)
+                // sendVerificationEmail(newUser.email, newUser.verificationToken)
                 res.status(200).json({ "Message" : 'Create new user successfully' })
             }            
         }
@@ -123,13 +96,91 @@ class authController {
             // create JWT return to client and allow user to login
             const token = jwt.sign({
                 userId : user._id,
-            }, createSecretKey(), { algorithm: 'HS256' })
+            }, SECRET_KEY, { algorithm: 'HS256' })
 
-            res.status(200).json({token, "message": 'Login successfully'})
+            res.status(200).json({token, "message": 'Login successfully', "username" : user.username})
         }
         catch(error) {
             res.status(500).json({ "message" : 'Login failed' })
             console.log("Login error:", error)
+            next(error)
+        }
+    }
+
+    //[POST] users/resetpassword
+    async resetPassword(req, res, next) {
+        try {
+            const email = req.body.email
+            // check if email is not exists
+            const user = await UsersModel.findOne({ email })
+            if(!user) {
+                return res.status(400).json({ 'message' : 'your email is not exist' })
+            }
+
+            // create OTP code and return to client to verify their reset-password request
+            // random OTP from 1000 to 9999
+            const otp = Math.floor(Math.random()*8999 + 1000)
+
+            const payload = {
+                userId: user._id,
+                otp
+            }
+
+            const token = jwt.sign(payload, SECRET_KEY + user._id + otp.toString(), { expiresIn : '10m' })          
+            sendEmail(email, '[ShoeShop] Reset Your Password', `OTP to reset your password is: ${otp} . Expried in 10 minutes`)
+            res.status(200).json({ token, userId: user._id , message: 'Send reset password email successfully' })
+        }
+        catch(error) {
+            res.status(500).json({ 'message': 'reset password failed' })
+            console.log('Reset password error', error)
+            next(error)
+        }
+    }
+
+    //[POST] users/resetpassword/:id/:token
+    async verifyResetPassword (req, res, next) {
+        try {
+            const { otp } = req.body
+            const { token , id } = req.params
+            const payload = jwt.verify(token, SECRET_KEY + id + otp)
+            if(payload.userId !== id)
+                return res.status(400).json({ 'message' : 'OTP incorrect' })
+
+            const newPayload = {
+                userId : id,                
+            }
+
+            const newToken = jwt.sign(newPayload, SECRET_KEY + id)
+            res.status(200).json({ message: 'verify reset password successfully', token : newToken, userId : id })
+        }
+        catch(err)
+        {
+            res.status(401).json({ "message": "Your verificaiton to reset password is not accepted" })
+            console.log("Verify reset password error", err)
+            next(err)
+        }
+    }
+
+    //[POST] /users/changepassword/:id/:token 
+    async changePassword(req,res,next) {
+        try {
+            const { id , token } = req.params
+            const { password } = req.body
+            const payload = jwt.verify(token, SECRET_KEY + id )
+            if(payload.userId !== id)
+                return res.status(400).json({ "message" : "reset password error" })
+
+            const user = await UsersModel.findOne({ _id : id })
+            user.password = password
+            
+            await user.save()
+
+            const newToken = jwt.sign({ userId : user._id }, SECRET_KEY , { algorithm: 'HS256' })
+            res.status(200).json({ 'message' : 'reset password successfully', "username" : user.username , "email" : user.email, "token" : newToken})
+        }
+        catch(error) {
+            res.status(500).json({ "message" : "resetpassword error" })
+            console.log('Error message: ', error)
             next(error)
         }
     }
