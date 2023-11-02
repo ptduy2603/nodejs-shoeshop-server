@@ -96,7 +96,7 @@ class authController {
             // create JWT return to client and allow user to login
             const token = jwt.sign({
                 userId : user._id,
-            }, SECRET_KEY, { algorithm: 'HS256' })
+            }, SECRET_KEY)
 
             res.status(200).json({token, "message": 'Login successfully', "username" : user.username})
         }
@@ -175,7 +175,7 @@ class authController {
             
             await user.save()
 
-            const newToken = jwt.sign({ userId : user._id }, SECRET_KEY , { algorithm: 'HS256' })
+            const newToken = jwt.sign({ userId : user._id }, SECRET_KEY )
             res.status(200).json({ 'message' : 'reset password successfully', "username" : user.username , "email" : user.email, "token" : newToken})
         }
         catch(error) {
