@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const crypto = require('crypto')
 
 const connectionKey = 'mongodb+srv://admin:shoeshop@cluster0.3mxb0f7.mongodb.net/shoeshop?retryWrites=true&w=majority'
 const PORT = process.env.PORT || 8000

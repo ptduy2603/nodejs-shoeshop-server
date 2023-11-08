@@ -13,6 +13,10 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
+    avatar: {
+      type : String,
+      default : '',
+    },
     password: {
       type: String,
       required: true,
@@ -22,7 +26,7 @@ const userSchema = new Schema(
       default: false,
     },
     verificationToken: { type: String },
-    addresses: [
+    addresses: 
       {
         phoneNumber: String,
         houseNo: String,
@@ -30,7 +34,6 @@ const userSchema = new Schema(
         district: String,
         province: String,
       },
-    ],
     orders: [
       {
         type: mongoose.Schema.Types.ObjectId,

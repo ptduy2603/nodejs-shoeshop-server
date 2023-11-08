@@ -98,7 +98,14 @@ class authController {
                 userId : user._id,
             }, SECRET_KEY)
 
-            res.status(200).json({token, "message": 'Login successfully', "username" : user.username})
+            const currentUser = {
+                token,
+                username : user.username,
+                email : user.email,
+                avatar : user.avatar,                
+            }
+
+            res.status(200).json({"message": 'Login successfully', currentUser})
         }
         catch(error) {
             res.status(500).json({ "message" : 'Login failed' })

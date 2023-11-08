@@ -11,6 +11,10 @@ const ProductSchema = new Schema({
         required : true,
         unique: true,
    },
+   price: {
+        type : Number,
+        required: true,
+   },
    brand: {
         type: String,
         required: true,
@@ -23,23 +27,22 @@ const ProductSchema = new Schema({
         type: String,
         required: true,
     },
-    specials : [
-        {
-            colors: [
-                {
-                    color : {
-                        type: String,
-                        required: true,
-                    },
-                    image: {
-                        type: String,
-                        required: true,
-                    }
+    specials : 
+    {
+        colors: [
+            {
+                color : {
+                    type: String,
+                    required: true,
+                },
+                image: {
+                    type: String,
+                    required: true,
                 }
-            ],
-            sizes: []       
-        },
-    ]   
+            }
+        ],
+        sizes: []       
+    },      
 }, { timestamps : true })
 
 
