@@ -4,8 +4,7 @@ const jwt = require('jsonwebtoken')
 
 const sendEmail = require('../../untils/sendEmail')
 
-// function to create a secretKey for JWT encode
-const SECRET_KEY = 'myserverforshoeshop'
+const { SECRET_KEY } = require('../../data/index')
 
 class authController {
     //[GET] /users
@@ -189,6 +188,47 @@ class authController {
             res.status(500).json({ "message" : "resetpassword error" })
             console.log('Error message: ', error)
             next(error)
+        }
+    }
+
+    //[POST] /users/delete-account
+    async destroy(req, res, next) {
+         try {
+            const { token } = req.body
+            // giải mã token để lấy userId
+            const { userId } = jwt.verify(token, SECRET_KEY)
+            await UsersModel.deleteOne({ _id : userId })
+            res.status(200).json({ "message" : "delete user successfully"})
+        }
+        catch(error) {
+            res.status(400).json({ "message" : "delete user failed" })
+            console.log(err)
+            next(err)
+        }
+    }
+
+    //[POST] /users/adjust-password
+    async adjustPassword(req, res, next) {
+        try {
+            const { token, password, newPassword } = req.body
+            const { userId } = jwt.verify(token, SECRET_KEY)
+            const user = await UsersModel.findOne({ _id : userId })
+            if(!user) {
+                return res.status(400).json({ "message" : "can't find user" })
+            }
+            if(user.password != password) {
+                return res.status(404).json({ "message" : "old password is incorrect" })
+            }
+
+            user.password = newPassword
+            await user.save()
+            res.status(200).json({ "message" : "adjust password successfully" })
+        }
+        catch(err)
+        {
+            res.status(500).json({ "message" : "adjust passowrd error" })
+            console.log(err)
+            next(err)
         }
     }
 }

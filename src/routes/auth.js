@@ -9,5 +9,7 @@ router.post('/resetpassword/:id/:token', authController.verifyResetPassword)
 router.post('/changepassword/:id/:token', authController.changePassword)
 router.post('/resetpassword', authController.resetPassword)
 router.post('/login', authController.login)
+router.post('/delete-account', authController.destroy)
+router.post('/adjust-password', authController.adjustPassword)
 
 module.exports = router

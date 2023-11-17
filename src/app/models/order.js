@@ -7,11 +7,11 @@ const orderSchema = new Schema({
         ref: 'users',
         required : true,
     },
-    cartId : {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'carts',
-        required : true,
-    },
+    // cartId : {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'carts',
+    //     required : true,
+    // },
     products : [
         {
             productId : {
@@ -41,7 +41,7 @@ const orderSchema = new Schema({
             type: String,
             required: true,
         },
-        commue: {
+        ward: {
             type: String,
             required: true,
         },

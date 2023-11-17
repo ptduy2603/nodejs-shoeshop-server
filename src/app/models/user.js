@@ -30,7 +30,7 @@ const userSchema = new Schema(
       {
         phoneNumber: String,
         houseNo: String,
-        commune: String,
+        ward: String,
         district: String,
         province: String,
       },
