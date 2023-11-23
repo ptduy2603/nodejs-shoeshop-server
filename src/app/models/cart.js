@@ -9,10 +9,6 @@ const CartSchema = new Schema({
         type: String,
         default : 'active',
     },
-    modifiedOn : {
-        type: Date,
-        default : Date.now()
-    },
     products: [
         {
             productId : {
@@ -29,15 +25,14 @@ const CartSchema = new Schema({
                 type: Number
             },
             color : {
-                type : String
+               _id: false,
+               name : String,
+               image: String,
             }
         }
     ]
-    /*
-        products : Array { productId, quantity }
-    */ 
 }, {
-    timestamps: true
+    timestamps: true,
 })
 
 module.exports = model('carts', CartSchema)
