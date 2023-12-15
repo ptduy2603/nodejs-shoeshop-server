@@ -10,9 +10,7 @@ class CartController {
             console.log(token)
             const { userId } = jwt.verify(token, SECRET_KEY)
             const cart = await cartModel.findOne({ userId }).populate('products.productId', 'name price code')
-            if(!cart)
-                res.status(404).json({ "message" : "user's cart is not exists", products : [] })
-            res.status(200).json({ products : cart.products })        
+            res.status(200).json({ products : cart?.products || [] })        
         }
         catch(err) {
             res.status(500).json({"message": "Get cart failed"})
