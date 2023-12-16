@@ -77,6 +77,20 @@ class authController {
         }
     }
 
+    //[GET] /users/:token
+    async getSigleUserInfo(req, res, next) {
+        try {
+            const { token } = req.params
+            const { userId } = jwt.verify(token, SECRET_KEY)
+            const user = await UsersModel.findOne({ _id : userId })
+            res.status(200).json({ user : user ?? {} })
+        }
+        catch(err) {
+            console.error(err)
+            next(err)
+        }
+    }
+
     //[POST] users/login
     async login(req, res, next) {
         try {
@@ -97,14 +111,7 @@ class authController {
                 userId : user._id,
             }, SECRET_KEY)
 
-            const currentUser = {
-                token,
-                username : user.username,
-                email : user.email,
-                avatar : user.avatar,                
-            }
-
-            res.status(200).json({"message": 'Login successfully', currentUser})
+            res.status(200).json({"message": 'Login successfully', token})
         }
         catch(error) {
             res.status(500).json({ "message" : 'Login failed' })
@@ -182,7 +189,7 @@ class authController {
             await user.save()
 
             const newToken = jwt.sign({ userId : user._id }, SECRET_KEY )
-            res.status(200).json({ 'message' : 'reset password successfully', "username" : user.username , "email" : user.email, "token" : newToken})
+            res.status(200).json({ 'message' : 'reset password successfully', token : newToken})
         }
         catch(error) {
             res.status(500).json({ "message" : "resetpassword error" })

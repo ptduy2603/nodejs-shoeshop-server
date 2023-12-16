@@ -3,6 +3,7 @@ const router = express.Router()
 const authController = require('../app/controllers/authController')
 
 router.get('/verify/:token', authController.verifyUser)
+router.get('/:token', authController.getSigleUserInfo)
 router.get('/', authController.getUsers)
 router.post('/register', authController.create)
 router.post('/resetpassword/:id/:token', authController.verifyResetPassword)

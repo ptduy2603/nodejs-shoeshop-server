@@ -7,9 +7,8 @@ class CartController {
     async getCart(req, res, next) {
         try {
             const token = req.params.token
-            console.log(token)
             const { userId } = jwt.verify(token, SECRET_KEY)
-            const cart = await cartModel.findOne({ userId }).populate('products.productId', 'name price code')
+            const cart = await cartModel.findOne({ userId })
             res.status(200).json({ products : cart?.products || [] })        
         }
         catch(err) {
@@ -29,11 +28,11 @@ class CartController {
                 // kiểm tra sản phẩm đã tồn tại trong giỏ hàng hay chưa
                 let existProduct = null
                 existProduct = cart.products.find(item => {
-                    return (item.productId.equals(product._id) && item.size === product.size && item.color.name === product.color.name)
+                    return (item.productId.equals(product.productId) && item.size === product.size && item.color.name === product.color.name)
                 })
                 if(!existProduct) {
                     cart.products.push({
-                        productId : product._id,
+                        productId : product.productId,
                         quantity : 1,
                         size : product.size,
                         color : product.color
@@ -48,7 +47,7 @@ class CartController {
             else {
                 const products = [
                     {
-                        productId : product._id,
+                        productId : product.productId,
                         size: product.size,
                         color : product.color,
                         quantity : 1
@@ -61,6 +60,22 @@ class CartController {
         catch(err) {
             res.status(500).json({"message" : "add product to cart failed"})
             console.log(err)
+            next(err)
+        }
+    }
+
+    //[PATCH] /cart/update
+    async updateCart(req, res, next) {
+        try {
+            const { token, products } = req.body
+            const { userId } = jwt.verify(token, SECRET_KEY)
+            const cart = cartModel.findOne({ userId })
+            if(cart) {
+                
+            }
+        }
+        catch(err) {
+            console.error(err)
             next(err)
         }
     }
