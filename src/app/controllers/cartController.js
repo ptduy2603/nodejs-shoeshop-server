@@ -69,10 +69,9 @@ class CartController {
         try {
             const { token, products } = req.body
             const { userId } = jwt.verify(token, SECRET_KEY)
-            const cart = cartModel.findOne({ userId })
-            if(cart) {
-                
-            }
+            await cartModel.updateOne({ userId }, { products })
+            const cart = await cartModel.findOne({ userId })
+            return res.status(200).json({ cart : cart.products })
         }
         catch(err) {
             console.error(err)
