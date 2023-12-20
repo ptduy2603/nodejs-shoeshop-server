@@ -245,7 +245,7 @@ class authController {
         try {
             const  { token } = req.params
             const { userId } = jwt.verify(token, SECRET_KEY)
-            const user = UsersModel.findOne({ _id : userId })
+            const user = await UsersModel.findOne({ _id : userId })
             let products = []
             if(user) {
                 user?.favourites.forEach(async ( productId ) => {
