@@ -1,5 +1,6 @@
 const crypto = require('crypto')
 const UsersModel = require('../models/user')
+const ProductModel = require('../models/product')
 const jwt = require('jsonwebtoken')
 
 const sendEmail = require('../../untils/sendEmail')
@@ -235,6 +236,51 @@ class authController {
         {
             res.status(500).json({ "message" : "adjust passowrd error" })
             console.log(err)
+            next(err)
+        }
+    }
+
+    //[GET] users/favourites/:token
+    async getFavouriteProducts (req, res, next) {
+        try {
+            const  { token } = req.params
+            const { userId } = jwt.verify(token, SECRET_KEY)
+            const user = UsersModel.findOne({ _id : userId })
+            let products = []
+            if(user) {
+                user?.favourites.forEach(async ( productId ) => {
+                    const product = await ProductModel.findOne({ _id : productId })
+                    products.push(product)
+                })
+            }
+            res.status(200).json({ "message" : "fetch favourites" , products })
+        }
+        catch(err) {
+            res.status(500).json({ "message" : "get favourites failed" })
+            console.log(err)
+            next(err)
+        }
+    }
+
+    //[PATCH] users/update-favourites
+    async updateUserFavouriteProducts (req, res, next) {
+        try {
+            const { token, products } = req.body
+            const { userId } = jwt.verify(token, SECRET_KEY)
+            await UsersModel.updateOne({ _id : userId }, { favourites : products })
+            const user = await UsersModel.findOne({ _id : userId })
+            let newProducts = []
+            if(user) {
+                user?.favourites.forEach(async ( productId ) => {
+                    const product = await ProductModel.findOne({ _id : productId })
+                    newProducts.push(product)
+                })
+            }
+            res.status(200).json({ products : newProducts })
+        }
+        catch(err) {
+            res.status(500).json({ "message" : "update favourites failed" })
+            console.error(err)
             next(err)
         }
     }

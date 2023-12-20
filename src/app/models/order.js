@@ -7,11 +7,6 @@ const orderSchema = new Schema({
         ref: 'users',
         required : true,
     },
-    // cartId : {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'carts',
-    //     required : true,
-    // },
     products : [
         {
             productId : {
@@ -21,7 +16,7 @@ const orderSchema = new Schema({
             },
             quantity : { type: Number , required: true },
             color: { type: String, required: true },
-            size: { type: String, required: true },
+            size: { type: Number, required: true },
         }
     ],
     totalPrice: {
@@ -29,15 +24,7 @@ const orderSchema = new Schema({
         required : true,
     },
     shippingAddress: {
-        name: {
-            type: String,
-            required: true,
-        },
         phoneNumber: {
-            type: String,
-            required: true,
-        },
-        houseNo: {
             type: String,
             required: true,
         },

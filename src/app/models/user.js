@@ -14,8 +14,8 @@ const userSchema = new Schema(
       unique: true,
     },
     avatar: {
-      type : String,
-      default : '',
+      type: String,
+      default: "",
     },
     password: {
       type: String,
@@ -26,22 +26,18 @@ const userSchema = new Schema(
       default: false,
     },
     verificationToken: { type: String },
-    addresses: 
-      {
-        phoneNumber: String,
-        houseNo: String,
-        ward: String,
-        district: String,
-        province: String,
-      },
-    orders: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "order",
-      },
-    ],
+    addresses: {
+      phoneNumber: String,
+      ward: String,
+      district: String,
+      province: String,
+    },
+    favourites : {
+      type : Array,
+      default : [],
+    }
   },
-  { timestamps : true }
+  { timestamps: true }
 );
 
-module.exports = mongoose.model("users", userSchema)
+module.exports = mongoose.model("users", userSchema);

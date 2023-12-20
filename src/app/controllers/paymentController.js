@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken')
-const stripe = require('stripe')('sk_test_51ODA69Cbznb2GV06xMwa6L6AVkFOEHk583OqDTia7kRyGcBZoexZgRPhBG366PmgTkOPPSH1BoZKJTxdERRfSMcD00M3VkLZXs')
 
 const { SECRET_KEY } = require('../../data')
 const orderModel = require('../models/order')
-
+const cartModel = require('../models/cart')
 
 class paymemtController {
     //[POST] /payments/intents
@@ -28,7 +27,20 @@ class paymemtController {
             res.status(500).json({ "message" : "payment intent error" })
         }
     }
-}
 
+    //[POST] /payments/order
+    async createNewOrder (req, res, next) {
+        try {
+            const { token , products, shippingAddress, totalPrice, paymentMethod  } = req.body
+            const { userId } = jwt.verify
+            await orderModel.create({ userId, products, shippingAddress, totalPrice, paymentMethod })
+            // const cart =        }
+        }
+        catch(error) {
+            console.error(error)
+            next(error)
+        }
+    }
+}
 
 module.exports = new paymemtController
