@@ -25,6 +25,11 @@ class paymemtController {
             next(error)
         }
     }
+
+    //[GET] /payments
+    async getUserOrders(req, res, next) {
+        
+    } 
 }
 
 module.exports = new paymemtController

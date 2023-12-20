@@ -246,14 +246,15 @@ class authController {
             const  { token } = req.params
             const { userId } = jwt.verify(token, SECRET_KEY)
             const user = await UsersModel.findOne({ _id : userId })
-            let products = []
+            const products = await ProductModel.find({})
+            let likedProducts = []
             if(user) {
                 user?.favourites.forEach(async ( productId ) => {
-                    const product = await ProductModel.findOne({ _id : productId })
-                    products.push(product)
+                    const product = products.find(item => item._id.equals(productId.toString()))
+                    likedProducts.push(product)
                 })
             }
-            res.status(200).json({ "message" : "fetch favourites" , products })
+            res.status(200).json({ "message" : "fetch favourites" , products : likedProducts })
         }
         catch(err) {
             res.status(500).json({ "message" : "get favourites failed" })
@@ -265,18 +266,19 @@ class authController {
     //[PATCH] users/update-favourites
     async updateUserFavouriteProducts (req, res, next) {
         try {
-            const { token, products } = req.body
+            const { token, products : newProducts } = req.body
             const { userId } = jwt.verify(token, SECRET_KEY)
-            await UsersModel.updateOne({ _id : userId }, { favourites : products })
+            await UsersModel.updateOne({ _id : userId }, { favourites : newProducts })
+            const products = await ProductModel.find({})
             const user = await UsersModel.findOne({ _id : userId })
-            let newProducts = []
+            let likedProducts = []
             if(user) {
                 user?.favourites.forEach(async ( productId ) => {
-                    const product = await ProductModel.findOne({ _id : productId })
-                    newProducts.push(product)
+                    const product = products.find(item => item._id.equals(productId.toString()))
+                    likedProducts.push(product)
                 })
             }
-            res.status(200).json({ products : newProducts })
+            res.status(200).json({ "message" : "fetch favourites" , products : likedProducts })
         }
         catch(err) {
             res.status(500).json({ "message" : "update favourites failed" })
