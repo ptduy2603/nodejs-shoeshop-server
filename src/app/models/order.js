@@ -44,7 +44,11 @@ const orderSchema = new Schema({
     paymentMethod: {
         type: String,
         required: true,
-    }
+    },
+    status : {
+        type: String,
+        default : 'pendding',
+    },
 }, { timestamps: true })
 
 module.exports = mongoose.model('orders', orderSchema)

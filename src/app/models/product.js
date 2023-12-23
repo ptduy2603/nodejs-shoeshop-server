@@ -39,7 +39,23 @@ const productSchema = new Schema({
             }
         }
     ],
-    sizes: Array      
+    sizes: Array ,   
+    comments : [
+        {
+            posted : {
+                type : Date,
+                default : Date.now()
+            },
+            name : {
+                type : String,
+                required :  true,
+            },
+            text : {
+                type : String,
+                required : true,
+            }
+        }
+    ] ,
 }, { timestamps : true })
 
 

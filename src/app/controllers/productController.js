@@ -30,6 +30,25 @@ class ProductController {
             next(err)
         }
     }
+
+    //[PUT] /products/comment
+    async addComment (req, res, next) {
+        try {
+            const { productId, comment } = req.body
+            const product = await ProductModel.findOne({ _id : productId })
+            if(product)
+            {
+                product.comments = [comment, ...product.comments]
+                await product.save()
+            }
+            res.status(200).json({ message : "Add comment successfully" , comments : product.comments || [] })
+        }
+        catch(err) {
+            res.status(500)
+            console.log(err)
+            next(err)
+        }
+    }
 }
 
 module.exports = new ProductController

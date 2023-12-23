@@ -99,7 +99,7 @@ class authController {
             // check if user is not exsist
             const user = await UsersModel.findOne({ email })
             if(!user) {
-                return res.status(401).json({ "message" : "Your is mail is not exist" })
+                return res.status(401).json({ "message" : "Your email is not exist" })
             }
             
             // check if password is incorrect

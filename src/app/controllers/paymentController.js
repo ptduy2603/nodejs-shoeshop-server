@@ -26,9 +26,18 @@ class paymemtController {
         }
     }
 
-    //[GET] /payments
+    //[GET] /payments/:token
     async getUserOrders(req, res, next) {
-        
+        try {
+            const { token } = req.params
+            const { userId } = jwt.verify(token, SECRET_KEY)
+            const orders = await orderModel.find({ userId })
+            res.status(200).json({ orders : orders || [] })
+        }
+        catch (err) {
+            console.error(err)
+            next(err)
+        }
     } 
 }
 
