@@ -16,7 +16,14 @@ git clone https://github.com/ptduy2603/nodejs-shoeshop-server.git
 npm install
 ```
 
-3. Start project on development environment
+3. Add env variables
+
+```
+// .env
+NODE_DATABASE_CONNECTION_KEY=
+```
+
+4. Start project on development environment
 
 ```bash
 npm start
