@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
@@ -21,5 +22,5 @@ app.use(cors());
 // connect to MongoDB allats
 connectDatabase(app);
 
-// routes navigate
+// routes navigation
 route(app);
